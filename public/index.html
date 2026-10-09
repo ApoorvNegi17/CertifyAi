@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CertifyAI - Multi-Format Certificate & Email Agent</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Background Animated Mesh Grid -->
+  <div class="bg-gradient-glow"></div>
+
+  <!-- Main Container -->
+  <div class="app-wrapper">
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+      <div class="logo-brand">
+        <div class="logo-icon"><i class="fa-solid fa-award"></i></div>
+        <div class="logo-text">
+          <h1>Certify<span>AI</span></h1>
+          <p>Multi-Format Certificate Generator & Automated Email Dispatcher Agent</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="badge badge-ai"><i class="fa-solid fa-bolt"></i> AI Agent Active</span>
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="step-nav">
+      <button class="step-btn active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-label"><i class="fa-solid fa-file-import"></i> 1. Ingest List</span>
+      </button>
+      <button class="step-btn" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label"><i class="fa-solid fa-file-image"></i> 2. Upload Template</span>
+      </button>
+      <button class="step-btn" data-step="3">
+        <span class="step-num">3</span>
+        <span class="step-label"><i class="fa-solid fa-file-pdf"></i> 3. Generate PDFs</span>
+      </button>
+      <button class="step-btn" data-step="4">
+        <span class="step-num">4</span>
+        <span class="step-label"><i class="fa-solid fa-paper-plane"></i> 4. Configure Sender Email</span>
+      </button>
+    </nav>
+
+    <!-- STEP 1: MULTI-FORMAT LIST INGESTION -->
+    <section id="step1" class="step-panel active">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Multi-Format Participant List Ingestion</h2>
+        <p>AI Agent reads participant Name & Email ID from <strong>Excel (.xlsx/.csv), Word (.docx), PDF (.pdf), Image/Screenshot (.jpg/.png via OCR)</strong>, or raw text.</p>
+      </div>
+
+      <!-- Supported Format Cards Banner -->
+      <div class="format-badges-banner">
+        <div class="format-badge-card"><i class="fa-solid fa-file-excel icon-excel"></i> <span>Excel (.xlsx / .csv)</span></div>
+        <div class="format-badge-card"><i class="fa-solid fa-file-word icon-word"></i> <span>Word (.docx)</span></div>
+        <div class="format-badge-card"><i class="fa-solid fa-file-pdf icon-pdf"></i> <span>PDF Documents</span></div>
+        <div class="format-badge-card"><i class="fa-solid fa-file-image icon-img"></i> <span>Image Screenshot (OCR)</span></div>
+        <div class="format-badge-card"><i class="fa-solid fa-align-left"></i> <span>Plain Text / Copy-Paste</span></div>
+      </div>
+
+      <div class="import-grid mt-3">
+        <!-- Dropzone Card -->
+        <div class="glass-card dropzone-card" id="dropzone">
+          <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.docx,.pdf,.png,.jpg,.jpeg,.webp,.txt" hidden>
+          <div class="dropzone-content">
+            <div class="upload-icon-circle">
+              <i class="fa-solid fa-file-excel icon-excel"></i>
+              <i class="fa-solid fa-file-word icon-word"></i>
+              <i class="fa-solid fa-file-pdf icon-pdf"></i>
+              <i class="fa-solid fa-file-image icon-img"></i>
+            </div>
+            <h3>Upload Participant List File</h3>
+            <p>Drag & drop or click to upload <strong>Excel, Word, PDF, Screenshot Image (JPG/PNG), or CSV</strong></p>
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+              <i class="fa-solid fa-folder-open"></i> Browse & Upload File
+            </button>
+            <div id="uploadSpinner" class="spinner-overlay hidden">
+              <div class="spinner"></div>
+              <span id="spinnerText">AI Engine Extracting Names & Mail IDs...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Raw Text / Fast Demo Card -->
+        <div class="glass-card text-paste-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-paste"></i> Or Paste Text / Quick Demo Presets</h3>
+            <button class="btn btn-sm btn-ghost" id="sampleDataBtn"><i class="fa-solid fa-flask"></i> Load Demo List</button>
+          </div>
+          <textarea id="rawTextarea" placeholder="Paste names and email addresses here...&#10;Examples:&#10;Alex Johnson, alex.johnson@example.com&#10;Sophia Chen <sophia.chen@techcorp.io>&#10;Name: Marcus Vance Email: marcus@cloud.net"></textarea>
+          <div class="card-footer">
+            <button id="parseTextBtn" class="btn btn-secondary"><i class="fa-solid fa-microchip"></i> Extract Names & Emails with AI</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extracted Data Table -->
+      <div class="glass-card data-table-card mt-4">
+        <div class="card-header flex-between">
+          <div class="header-title">
+            <h3><i class="fa-solid fa-users"></i> Extracted Participants (<span id="participantCount">0</span>)</h3>
+            <span class="subtext">Parsed Names and Email IDs ready for certificate generation and automated dispatch</span>
+          </div>
+          <div class="header-btns">
+            <button id="addRowBtn" class="btn btn-sm btn-ghost"><i class="fa-solid fa-plus"></i> Add Row</button>
+            <button id="clearDataBtn" class="btn btn-sm btn-danger-ghost"><i class="fa-solid fa-trash"></i> Clear All</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Participant Name</th>
+                <th>Mail ID (Recipient Email)</th>
+                <th>Event / Course</th>
+                <th>Date</th>
+                <th>Cert ID</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="participantTableBody">
+              <tr>
+                <td colspan="7" class="empty-state">
+                  <i class="fa-solid fa-inbox"></i>
+                  <p>No participant data loaded yet. Upload your Excel, Word, JPG, PDF, or paste text above.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: UPLOAD PREMADE CERTIFICATE IMAGE & POSITION NAME -->
+    <section id="step2" class="step-panel">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-file-image"></i> Upload Premade Certificate & Set Name Position</h2>
+        <p>Upload your premade hackathon certificate image (PNG/JPG). Click anywhere on the image to set where participant names will be printed!</p>
+      </div>
+
+      <div class="studio-grid">
+        <!-- Controls Sidebar -->
+        <div class="glass-card studio-sidebar">
+          <h3><i class="fa-solid fa-upload"></i> Upload Premade Certificate</h3>
+
+          <div class="control-group">
+            <label><i class="fa-solid fa-image"></i> Select Premade Certificate Image (PNG/JPG)</label>
+            <input type="file" id="customTemplateInput" accept="image/*" class="file-input-styled">
+          </div>
+
+          <div class="control-group">
+            <button id="autoDetectNameBtn" class="btn btn-block btn-ghost">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> AI Auto-Center Name Position
+            </button>
+          </div>
+
+          <hr class="divider">
+
+          <h3><i class="fa-solid fa-font"></i> Participant Name Styling</h3>
+
+          <div class="control-group">
+            <label>Font Family</label>
+            <select id="fontFamilySelect">
+              <option value="Outfit">Outfit (Geometric Tech)</option>
+              <option value="Playfair Display">Playfair Display (Serif Luxury)</option>
+              <option value="Great Vibes">Great Vibes (Calligraphy Script)</option>
+              <option value="Cinzel">Cinzel (Classic Trajan)</option>
+              <option value="Montserrat">Montserrat (Clean Sans)</option>
+              <option value="Inter">Inter (Modern Clean)</option>
+            </select>
+          </div>
+
+          <div class="control-row">
+            <div class="control-group">
+              <label>Name Size (px)</label>
+              <input type="number" id="fontSizeInput" value="44" min="12" max="120">
+            </div>
+            <div class="control-group">
+              <label>Text Color</label>
+              <input type="color" id="textColorInput" value="#0F172A">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <div class="control-group">
+              <label>Text Transform</label>
+              <select id="textTransformSelect">
+                <option value="titlecase">Title Case</option>
+                <option value="uppercase">UPPERCASE</option>
+                <option value="none">As Typed</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label>Alignment</label>
+              <select id="textAlignSelect">
+                <option value="center">Center</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group mt-2">
+            <label><i class="fa-solid fa-crosshairs"></i> Target Position Coordinates</label>
+            <div class="control-row">
+              <input type="number" id="posXInput" value="450" placeholder="X">
+              <input type="number" id="posYInput" value="320" placeholder="Y">
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <!-- Background Erase / Inpaint Controls -->
+          <h3><i class="fa-solid fa-eraser"></i> Background Erase Settings</h3>
+
+          <div class="control-group">
+            <div class="form-check">
+              <input type="checkbox" id="enableEraseCheckbox">
+              <label for="enableEraseCheckbox">
+                <strong>Erase Template Placeholder Box</strong>
+                <span class="subtext">Uncheck for clean transparent text overlay without background box</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="eraseColorBlock" class="control-row hidden">
+            <div class="control-group">
+              <label>Erase Fill Color</label>
+              <input type="color" id="eraseColorInput" value="#FFFFFF">
+            </div>
+            <div class="control-group">
+              <label>Erase Fill Mode</label>
+              <select id="eraseModeSelect">
+                <option value="white">Pure White (#FFFFFF)</option>
+                <option value="custom">Custom Color Picker</option>
+                <option value="transparent">Transparent (No Box)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas Preview Area -->
+        <div class="glass-card studio-canvas-card">
+          <div class="canvas-toolbar">
+            <span class="preview-badge"><i class="fa-solid fa-bullseye"></i> Visual Target Overlay</span>
+            <div class="canvas-info"><i class="fa-solid fa-hand-pointer"></i> Click anywhere on the certificate image to place participant names</div>
+          </div>
+
+          <div class="canvas-container" id="canvasContainer">
+            <canvas id="certificateCanvas" width="900" height="636"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: PDF GENERATOR -->
+    <section id="step3" class="step-panel">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-file-pdf"></i> Generate Personalized PDF Certificates</h2>
+        <p>AI Agent will replace participant names on your premade certificate image and output high-res PDFs for all participants.</p>
+      </div>
+
+      <div class="glass-card generator-hero">
+        <div class="hero-info">
+          <div class="stat-box">
+            <i class="fa-solid fa-users-viewfinder"></i>
+            <div>
+              <span id="genStatCount" class="stat-number">0</span>
+              <span class="stat-label">Participants Listed</span>
+            </div>
+          </div>
+          <div class="stat-box">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            <div>
+              <span class="stat-number">300 DPI</span>
+              <span class="stat-label">Vector PDF Quality</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button id="generatePdfBtn" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate All PDF Certificates
+          </button>
+          <button id="downloadZipBtn" class="btn btn-success btn-lg hidden">
+            <i class="fa-solid fa-file-zipper"></i> Download ZIP Package
+          </button>
+        </div>
+      </div>
+
+      <!-- Generated Certificates Gallery Grid -->
+      <div class="glass-card gallery-card mt-4">
+        <h3><i class="fa-solid fa-images"></i> Generated PDF Certificate Gallery</h3>
+        <div id="certificateGallery" class="gallery-grid">
+          <div class="empty-state">
+            <i class="fa-solid fa-certificate"></i>
+            <p>Click "Generate All PDF Certificates" above to render certificates for your participants.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: CONFIGURE SENDER EMAIL & DISPATCH -->
+    <section id="step4" class="step-panel">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-paper-plane"></i> Configure Sender Email & Launch Email Agent</h2>
+        <p>Set your Sender Email ID so participants receive their personalized certificate PDF directly from your configured email address!</p>
+      </div>
+
+      <div class="email-grid">
+        <!-- Sender Email Configuration Box -->
+        <div class="glass-card smtp-card">
+          <h3><i class="fa-solid fa-paper-plane text-primary"></i> Real Email Inbox Delivery Setup</h3>
+
+          <!-- Mode Selector -->
+          <div class="control-group">
+            <label><i class="fa-solid fa-sliders"></i> Select Email Dispatch Mode</label>
+            <select id="dispatchModeSelect" class="form-select">
+              <option value="real">Real Gmail / Inbox Delivery (Delivers directly to actual recipient Gmail inboxes)</option>
+              <option value="test">Sandbox Demo Mode (Webmail Preview Links only)</option>
+            </select>
+          </div>
+
+          <div id="realModeNotice" class="sender-info-banner mt-2">
+            <i class="fa-solid fa-circle-check text-success"></i>
+            <span><strong>Real Delivery Active:</strong> Emails will be delivered directly into the participant's actual Gmail inbox!</span>
+          </div>
+
+          <div id="testModeNotice" class="sender-info-banner mt-2 hidden">
+            <i class="fa-solid fa-vial text-warning"></i>
+            <span><strong>Sandbox Demo Mode:</strong> Generates webmail preview links for test purposes (doesn't send to real Gmail inboxes).</span>
+          </div>
+
+          <!-- Step-by-Step Gmail App Password Guide -->
+          <div id="gmailGuideCard" class="gmail-guide-card mt-3">
+            <div class="guide-header">
+              <i class="fa-brands fa-google text-danger"></i>
+              <div>
+                <strong>How to Fix Google "Setting not available for your account" Error</strong>
+                <p>Google requires <strong>2-Step Verification (2FA)</strong> to be turned ON before granting App Passwords.</p>
+              </div>
+            </div>
+            
+            <div class="fix-box">
+              <div class="fix-step">
+                <span class="step-badge">Step 1</span>
+                <span>Turn ON 2-Step Verification on your Google Account: <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" class="link-glow">myaccount.google.com/signinoptions/two-step-verification <i class="fa-solid fa-external-link"></i></a></span>
+              </div>
+              <div class="fix-step mt-2">
+                <span class="step-badge">Step 2</span>
+                <span>Now open App Passwords: <a href="https://myaccount.google.com/apppasswords" target="_blank" class="link-glow">myaccount.google.com/apppasswords <i class="fa-solid fa-external-link"></i></a> <em>(It will now open!)</em></span>
+              </div>
+              <div class="fix-step mt-2">
+                <span class="step-badge">Step 3</span>
+                <span>Type app name <code>CertifyAI</code>, click <strong>Create</strong>, copy the 16-character code, and paste it below!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Provider Preset Dropdown -->
+          <div class="control-group mt-3">
+            <label><i class="fa-solid fa-server"></i> Email Provider Preset</label>
+            <select id="emailProviderSelect" class="form-select">
+              <option value="gmail">Google Gmail (smtp.gmail.com:465)</option>
+              <option value="outlook">Outlook / Hotmail / Office 365 (smtp.office365.com:587)</option>
+              <option value="yahoo">Yahoo Mail (smtp.mail.yahoo.com:465)</option>
+              <option value="custom">Custom SMTP Server</option>
+            </select>
+          </div>
+
+          <!-- Sender Email Address Field -->
+          <div class="control-group">
+            <label><i class="fa-solid fa-at"></i> Sender Email Address (From Mail ID)</label>
+            <input type="email" id="smtpUser" value="organizer@domain.com" placeholder="e.g. your.email@gmail.com">
+            <span class="subtext">Participants will receive emails arriving directly FROM this email address</span>
+          </div>
+
+          <!-- Sender Name Field -->
+          <div class="control-group">
+            <label><i class="fa-solid fa-user-tag"></i> Sender Name (Display Name)</label>
+            <input type="text" id="smtpFromName" value="Certification Team" placeholder="e.g. Certification Team or Your Name">
+          </div>
+
+          <!-- Real SMTP Password / App Password Fields -->
+          <div id="smtpAuthBlock">
+            <div class="control-group">
+              <label><i class="fa-solid fa-key"></i> Sender Email Password / App Password</label>
+              <input type="password" id="smtpPass" placeholder="Paste 16-character Gmail App Password or Email Password">
+              <span class="subtext"><i class="fa-solid fa-shield-halved"></i> Paste the 16-character code from Google Account &gt; Security &gt; App Passwords.</span>
+            </div>
+
+            <div class="control-row">
+              <div class="control-group">
+                <label>SMTP Host</label>
+                <input type="text" id="smtpHost" value="smtp.gmail.com" placeholder="smtp.gmail.com">
+              </div>
+              <div class="control-group">
+                <label>SMTP Port</label>
+                <input type="number" id="smtpPort" value="465" placeholder="465 (SSL) or 587 (TLS)">
+              </div>
+            </div>
+          </div>
+
+          <div class="dispatch-action mt-4 flex-between">
+            <button id="testConnectionBtn" class="btn btn-secondary">
+              <i class="fa-solid fa-vial-circle-check"></i> Test Gmail Connection
+            </button>
+            <button id="sendEmailsBtn" class="btn btn-success btn-lg">
+              <i class="fa-solid fa-paper-plane"></i> Launch Email Agent Dispatch to Inboxes
+            </button>
+          </div>
+        </div>
+
+        <!-- Email Content Template Editor -->
+        <div class="glass-card email-template-card">
+          <h3><i class="fa-solid fa-envelope-open-text"></i> Email Subject & Body</h3>
+          
+          <div class="control-group">
+            <label>Subject Line</label>
+            <input type="text" id="emailSubjectInput" value="Your Official Certificate of Participation - {{name}}">
+          </div>
+
+          <div class="variable-tags">
+            <span>Click tag to insert:</span>
+            <button class="tag-btn" onclick="insertVariable('{{name}}')">{{name}}</button>
+            <button class="tag-btn" onclick="insertVariable('{{course}}')">{{course}}</button>
+            <button class="tag-btn" onclick="insertVariable('{{cert_id}}')">{{cert_id}}</button>
+          </div>
+
+          <div class="control-group">
+            <label>Email Body (HTML supported)</label>
+            <textarea id="emailBodyInput" rows="8">
+<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+  <h2 style="color: #0F172A;">Dear {{name}},</h2>
+  <p>Thank you for participating in our event!</p>
+  <p>Please find your official personalized <strong>Certificate of Participation</strong> attached to this email as a high-resolution PDF file (Certificate ID: <code>{{cert_id}}</code>).</p>
+  <br>
+  <p>Best regards,<br><strong>Organizing Team</strong></p>
+</div>
+            </textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Dispatch Terminal & Log -->
+      <div class="glass-card log-card mt-4">
+        <div class="card-header flex-between">
+          <h3><i class="fa-solid fa-terminal"></i> Live Dispatch Log & Status</h3>
+          <span id="dispatchProgressBadge" class="badge badge-info hidden">Dispatching...</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Sender Mail ID (From)</th>
+                <th>Participant Mail ID (To)</th>
+                <th>Status</th>
+                <th>Attachment</th>
+                <th>Message ID / Webmail Preview</th>
+              </tr>
+            </thead>
+            <tbody id="emailLogTableBody">
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <i class="fa-solid fa-paper-plane"></i>
+                  <p>No emails dispatched yet. Set your Sender Email Address above and click "Launch Email Agent Dispatch".</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Custom JS -->
+  <script src="app.js"></script>
+</body>
+</html>

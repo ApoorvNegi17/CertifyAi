@@ -1,0 +1,9 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+generated/*
+!generated/.gitkeep
+eng.traineddata
+.DS_Store
+*.log
+.env
